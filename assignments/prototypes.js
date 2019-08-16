@@ -16,13 +16,32 @@
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
 
+function GameObject(gameObjectAttr){
+  this.createdAt = gameObjectAttr.createdAt;
+  this.dimensions = gameObjectAttr.dimensions;
+}
+
+GameObject.prototype.destroy = function(){
+  return `${this.name} was removed from the game.`;
+}
+
 /*
   === CharacterStats ===
   * healthPoints
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+function CharacterStats(charStatAttr){
+  this.healthPoints = charStatAttr.healthPoints;
+  this.name = charStatAttr.name;
+  GameObject.call(this,charStatAttr);
+}
 
+CharacterStats.prototype = Object.create(GameObject.prototype);
+
+CharacterStats.prototype.takeDamage = function (){
+  return `${this.name} took damage.`;
+}
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
   * team
@@ -33,6 +52,22 @@
   * should inherit takeDamage() from CharacterStats
 */
  
+function Humanoid(humanAttr){
+  this.team = humanAttr.team;
+  this.weapons = humanAttr.weapons;
+  this.language = humanAttr.language;
+  CharacterStats.call(this, humanAttr);
+}
+
+Humanoid.prototype = Object.create(CharacterStats.prototype);
+
+Humanoid.prototype.greet = function() {
+  return `${this.name} offers greeting in ${this.language}`;
+}
+
+
+
+
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
   * Instances of Humanoid should have all of the same properties as CharacterStats and GameObject.
@@ -41,7 +76,7 @@
 
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -102,9 +137,101 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
   // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
   // * Create two new objects, one a villain and one a hero and fight it out with methods!
+
+  function Villian(evilAttr){
+    Humanoid.call(this, evilAttr); 
+    this.hiFiveOfDoom = evilAttr. hiFiveOfDoom;
+    this.opponentHealth = evilAttr.opponentHealth;
+  }
+  
+  Villian.prototype = Object.create(Humanoid.prototype); 
+  
+  Villian.prototype.magicalToot = function () {
+    this.opponentHealth -= 10;
+    return `The villian ${this.name} laughs and says I have released the magical toot and soon you will be defeated!`;
+  }
+  
+  
+  function Hero(heroAttr){
+    this.shortBrave = heroAttr.shortBrave;
+    this.opponentHealth = heroAttr.opponentHealth;
+  
+    Humanoid.call(this, heroAttr);
+  }
+  
+  Hero.prototype = Object.create(Humanoid.prototype);  
+  
+  Hero.prototype.specialBeam = function () {
+    this.opponentHealth -=20;
+    /*console.log(this.opponent);*/
+    return `The hero ${this.name} releases special beam cannon`; 
+  }
+  Hero.prototype.jazzHands = function () {
+    this.opponentHealth -=50; 
+    return `The hero ${this.name} uses Jazz Hands`
+  }
+  Hero.prototype.finishHim = function() {
+    this.opponentHealth-= 30; 
+    return `The hero learns to program using his weapons ${this.weapons}... and defeats the villian`; 
+  }
+  
+  const mightyShort = new Hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 2,
+    },
+    healthPoints: 10,
+    name: 'Mighty Short',
+    faction: 'Forest Kingdom',
+    weapons: [
+      'jazz hands', 'low center of gravity', 'special beam cannon', 'and sweep low'
+    ],
+    language: 'Irken',
+    goodLooks: 'High',
+    opponentHealth: 100
+  });
+  
+  sly = new Villian({
+    createdAt: new Date(),
+    dimensions: {
+      length: 1,
+      width: 2,
+      height: 4,
+    },
+    healthPoints: 10,
+    name: 'Sly Dodger',
+    faction: 'Forest Kingdom',
+    weapons: [
+      'high 5 of doom','magical toot',' and laser gun'
+    ],
+    language: 'Pootanese',
+    hiFiveOfDoom: 'Sugar Bomb',
+    opponentHealth: 100
+  });
+  
+  
+  console.log("A new villain appears. Our hero stands ready for battle.")
+  console.log(`The match ${mightyShort.name} vs ${sly.name} has begun.`);
+  console.log(`The villian has the following weapons ${sly.weapons}`);
+  console.log(`The hero has the following weapons ${mightyShort.weapons}`); 
+  console.log(`The villian has the following extra attribute ${sly.hiFiveOfDoom}`); 
+  console.log(`The villian speaks the following language ${sly.language}`);
+  console.log(`The hero speaks the following language ${mightyShort.language}`);
+  console.log(sly.magicalToot());
+  console.log(`${mightyShort.name} has been reduced, ${mightyShort.name} now has ${sly.opponentHealth}`);
+  console.log(mightyShort.specialBeam());
+  console.log(`${sly.name} has been reduced, ${sly.name} now has ${sly.opponentHealth}`);
+  console.log(mightyShort.jazzHands());
+  console.log(`${sly.name} has been reduced, ${sly.name} now has ${mightyShort.opponentHealth}`) ;
+  console.log(mightyShort.finishHim()); 
+  console.log(`${sly.name} has been reduced, ${mightyShort.opponentHealth} now has ${mightyShort.opponentHealth}`);
+  console.log(`${mightyShort.name} wins and gains control of the forest!`); 
+  
